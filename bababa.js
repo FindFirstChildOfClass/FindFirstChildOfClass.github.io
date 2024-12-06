@@ -1,83 +1,108 @@
-elements.silver_powder = {
-    color: "#C0C0C0",
+elements.quantum_particle = {
+    color: "#7F00FF",
     behavior: behaviors.POWDER,
-    category: "powders",
-    density: 10.5,
+    category: "energy",
     state: "solid",
-    description: "A fine metallic powder that conducts electricity.",
-    conduct: 0.8,
-};
-
-elements.ruby_dust = {
-    color: "#E0115F",
-    behavior: behaviors.POWDER,
-    category: "powders",
-    density: 4.0,
-    state: "solid",
-    description: "Crystalline powder that sparkles in light.",
-    temperature: 20,
-    tempHigh: 2000,
-    stateHigh: "molten_ruby",
-};
-
-elements.molten_ruby = {
-    color: "#FF0000",
-    behavior: behaviors.LIQUID,
-    category: "liquids",
-    density: 3.8,
-    state: "liquid",
-    temperature: 2050,
-    tempLow: 2000,
-    stateLow: "ruby_dust",
-};
-
-elements.bone_meal = {
-    color: "#F8F6EA",
-    behavior: behaviors.POWDER,
-    category: "powders",
-    density: 2.0,
-    state: "solid",
-    description: "Fertilizer that helps plants grow.",
+    density: 0.1,
+    temp: -273.15,
+    conduct: 1,
+    tempHigh: 100000,
     reactions: {
-        "plant": { "elem1": null, "elem2": ["plant", "plant"] },
-        "grass": { "elem1": null, "elem2": ["grass", "grass"] },
-        "flower": { "elem1": null, "elem2": ["flower", "flower"] }
-    }
-};
-
-elements.magnetic_dust = {
-    color: "#4A4A4A",
-    behavior: [
-        "XX|XX|XX",
-        "M2|XX|M2",
-        "M1|M1|M1",
-    ],
-    category: "powders",
-    density: 5.0,
-    state: "solid",
-    description: "Magnetic powder that attracts to itself.",
-};
-
-elements.glow_powder = {
-    color: ["#FFFF00", "#FFFFAA", "#FFFFFF"],
-    behavior: behaviors.POWDER,
-    category: "powders",
-    density: 1.2,
-    state: "solid",
-    description: "Glowing powder that emits light.",
+        "antimatter": { "elem1": null, "elem2": "radiation" }
+    },
     tick: function(pixel) {
         if (Math.random() < 0.1) {
-            pixel.color = pixelColorPick(pixel)
+            if (pixel.temp > 0) {
+                changePixel(pixel, "radiation");
+            }
+            if (Math.random() < 0.01) {
+                createPixel("quantum_particle", pixel.x + (Math.random()*2-1), pixel.y + (Math.random()*2-1));
+            }
         }
     }
 };
 
-runAfterLoad(function() {
-    if (enabledMods.includes("mods.js")) {
-        elements.silver_powder.maxSize = 1;
-        elements.ruby_dust.maxSize = 1;
-        elements.bone_meal.maxSize = 1;
-        elements.magnetic_dust.maxSize = 1;
-        elements.glow_powder.maxSize = 1;
+elements.dark_matter = {
+    color: "#000033",
+    behavior: behaviors.LIQUID,
+    category: "special",
+    density: 99999,
+    temp: -270,
+    conduct: 0,
+    viscosity: 100000,
+    reactions: {
+        "matter": { "elem1": null, "elem2": "radiation" }
+    },
+    tick: function(pixel) {
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (Math.random() < 0.1) {
+                    tryMove(pixel, pixel.x+i, pixel.y+j);
+                }
+            }
+        }
     }
-});
+};
+
+elements.plasma_field = {
+    color: ["#FF4500", "#FF6347", "#FF7F50"],
+    behavior: behaviors.GAS,
+    category: "energy",
+    density: 0.01,
+    temp: 10000,
+    conduct: 1,
+    reactions: {
+        "water": { "elem1": "steam", "elem2": "steam" }
+    },
+    tick: function(pixel) {
+        if (pixel.temp < 5000) {
+            changePixel(pixel, "fire");
+        }
+        if (Math.random() < 0.05) {
+            pixel.temp += 100;
+        }
+    }
+};
+
+elements.neutronium = {
+    color: "#4A4A4A",
+    behavior: behaviors.SOLID,
+    category: "special",
+    density: 999999,
+    temp: 1000000,
+    conduct: 1,
+    hardness: 1,
+    tick: function(pixel) {
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                let newPixel = pixelMap[pixel.x+i]?.[pixel.y+j];
+                if (newPixel && newPixel.element !== "neutronium") {
+                    changePixel(newPixel, "neutronium");
+                }
+            }
+        }
+    }
+};
+
+elements.quantum_foam = {
+    color: ["#E6E6FA", "#D8BFD8", "#DDA0DD"],
+    behavior: behaviors.LIQUID,
+    category: "special",
+    density: 0.001,
+    temp: -273.15,
+    conduct: 0,
+    viscosity: 0.1,
+    tick: function(pixel) {
+        if (Math.random() < 0.1) {
+            let randomElem = ["quantum_particle", "radiation", "void"][Math.floor(Math.random()*3)];
+            if (Math.random() < 0.01) {
+                createPixel(randomElem, pixel.x, pixel.y);
+            }
+        }
+    }
+};
+
+// Additional reactions for existing elements
+elements.radiation.reactions.quantum_particle = { "elem1": "quantum_foam", "elem2": null };
+elements.void.reactions.dark_matter = { "elem1": null, "elem2": "quantum_foam" };

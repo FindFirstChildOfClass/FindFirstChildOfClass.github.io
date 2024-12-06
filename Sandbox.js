@@ -1,8 +1,6 @@
-elements.deez = {
-    color: "#ffffff",
-    behavior: behaviors.LIQUID,
-    category: "liquids",
-    viscosity: 100000,
-    state: "liquid",
-    density: 720,
+elements.hello_world = {
+	color: "#ff0000",
+	behavior: behaviors.WALL,
+	category: "land",
+	state: "solid",
 };

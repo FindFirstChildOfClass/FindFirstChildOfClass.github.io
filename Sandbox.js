@@ -1,6 +1,8 @@
-elements.test_element = {
-    name: "Test Element",
-    color: "#FF0000",
-    behavior: behaviors.POWDER,
-    category: "powders"
+elements.deez = {
+    color: "#ffffff",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    viscosity: 100000,
+    state: "liquid",
+    density: 720,
 };

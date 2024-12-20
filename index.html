@@ -21,7 +21,6 @@
             fill: white;
         }
         video {
-            display: none;
             width: 100%;
             height: auto;
         }
@@ -40,12 +39,10 @@
     <script>
         const playButton = document.querySelector('.play-button');
         const video = document.getElementById('video');
-        const videoContainer = document.querySelector('.video-container');
         
         playButton.addEventListener('click', () => {
-            videoContainer.style.display = 'none'; // Hide the container
-            video.style.display = 'block'; // Show the video
-            video.play(); // Play the video
+            playButton.style.display = 'none';
+            video.play();
         });
     </script>
 </body>
